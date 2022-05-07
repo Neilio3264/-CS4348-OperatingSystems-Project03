@@ -1,64 +1,35 @@
-#include "../include/process.h"
-#include <string>
-#include <iostream>
-#include <fstream>
-#include <sstream>
+#include "../include/fcfs.h"
 
 using namespace std;
 
-void readProcessFile(vector<Process> &processes, string file);
-
 int main(int argc, char **argv)
 {
-    string filename = "";
+    string scheduleFileName = "";
+    string processFilename = "";
 
     if (argc == 3)
     {
-        filename = argv[2];
+        scheduleFileName = argv[1];
+        processFilename = argv[2];
     }
 
-    vector<Process> processList;
-    readProcessFile(processList, filename);
-
-    for (int i = 0; i < processList.size(); i++)
+    std::ifstream scheduleStream(scheduleFileName);
+    std::string scheduleName = "";
+    std::string line = "";
+    while (std::getline(scheduleStream, line))
     {
-        cout << processList[i].getNextTime() << endl;
+        std::istringstream iss(line);
+
+        if (!(iss >> scheduleName))
+        {
+            break;
+        }
+    }
+
+    if (scheduleName == "FCFS")
+    {
+        FCFS fcfs(processFilename);
     }
 
     return 0;
-}
-
-void readProcessFile(vector<Process> &processes, string file)
-{
-    ifstream inputStream(file);
-    string line = "";
-    while (getline(inputStream, line))
-    {
-        istringstream iss(line);
-
-        while (iss)
-        {
-            int arrivalTime;
-            string eventName;
-            int eventTime;
-
-            if (!(iss >> arrivalTime))
-            {
-                break;
-            }
-
-            Process temp(arrivalTime);
-            iss >> eventName >> eventTime;
-            if (eventName == "CPU")
-            {
-                temp.addEvent(1, eventTime);
-            }
-            else
-            {
-                temp.addEvent(0, eventTime);
-            }
-
-            processes.push_back(temp);
-        }
-    }
 }
