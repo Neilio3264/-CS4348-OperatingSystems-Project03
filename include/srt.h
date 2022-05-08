@@ -183,7 +183,7 @@ int SRT::calcNext()
         for (unsigned int i = 0; i < readyQueue.size(); i++)
         {
             int id = readyQueue.at(i);
-            int temp;
+            float temp;
             if (processList.at(id).first)
             {
                 temp = processList.at(id).lastPredicted;

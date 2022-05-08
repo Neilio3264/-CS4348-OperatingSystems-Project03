@@ -164,7 +164,7 @@ int HRRN::calcNext()
         for (unsigned int i = 0; i < readyQueue.size(); i++)
         {
             int id = readyQueue.at(i);
-            int temp = (((float)handler.getTime() - (float)processList.at(id).stats.responseLast) + processList.at(id).remainingTotal) / (float)processList.at(id).remainingTotal;
+            float temp = (((float)handler.getTime() - (float)processList.at(id).stats.responseLast) + processList.at(id).remainingTotal) / (float)processList.at(id).remainingTotal;
             if (temp > max)
             {
                 max = temp;
@@ -183,7 +183,7 @@ int HRRN::calcNext()
         for (unsigned int i = 0; i < readyQueue.size(); i++)
         {
             int id = readyQueue.at(i);
-            int temp;
+            float temp;
             if (processList.at(id).first)
             {
                 temp = processList.at(id).lastPredicted;
@@ -193,6 +193,8 @@ int HRRN::calcNext()
             {
                 temp = ((alpha * processList.at(id).getNextTime()) + ((1 - alpha) * processList.at(id).lastPredicted));
             }
+
+            temp = (((float)handler.getTime() - (float)processList.at(id).stats.responseLast) + temp) / temp;
 
             if (temp > max)
             {
