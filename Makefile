@@ -5,7 +5,7 @@ INCLUDE_DIR = ./include
 
 OBJS	= $(OBJS_DIR)/main.o
 SOURCE	= $(SRC_DIR)/main.cpp
-HEADER = $(INCLUDE_DIR)/process.h $(INCLUDE_DIR)/event.h
+HEADER = $(INCLUDE_DIR)/process.h $(INCLUDE_DIR)/event.h $(INCLUDE_DIR)/fcfs.h $(INCLUDE_DIR)/vrr.h $(INCLUDE_DIR)/srt.h $(INCLUDE_DIR)/hrrn.h $(INCLUDE_DIR)/feedback.h
 OUT	= $(BIN_DIR)/main
 CC	 = g++
 FLAGS	 = -g -c -std=c++11 -Wall

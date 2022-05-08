@@ -9,9 +9,9 @@
 
 enum Event
 {
-    ARRIVE,
     BLOCK,
     EXIT,
+    ARRIVE,
     UNBLOCK,
     TIMEOUT
 };

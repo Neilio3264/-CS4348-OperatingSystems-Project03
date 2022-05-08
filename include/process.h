@@ -8,7 +8,6 @@ class Process
 private:
     int arrivalTime;
     unsigned int size;
-    unsigned int nextEventIndex;
     bool complete;
 
     struct Statistics
@@ -31,7 +30,15 @@ private:
 
 public:
     int id;
+    unsigned int nextEventIndex;
     Statistics stats;
+    unsigned int previousPriority = 0;
+    int totalService = -1;
+    int remainingTotal = -1;
+    int remainingNext = -1;
+    int clockStart = 0;
+    int lastPredicted = -1;
+    bool first = true;
 
     Process();
     Process(int i, int time);
@@ -46,9 +53,11 @@ public:
     void calculateStats();
 
     int getNextEvent();
+    int getNextNextEvent();
     int getNextTime();
     int getId();
     void updateEventIndex();
+    void initS0();
 
     void print(std::string filename);
 };
@@ -64,6 +73,16 @@ void Process::initializeStat()
     stats.responseLast = -1;
     stats.responseCount = 0;
     stats.avg_responseTime = -1;
+
+    for (unsigned int i = 0; i < processEventList.size(); i++)
+    {
+        if (processEventList[i][0] == 0)
+        {
+            totalService += processEventList[i][1];
+        }
+    }
+
+    remainingTotal = totalService;
 }
 
 Process::Process()
@@ -128,6 +147,15 @@ int Process::getNextEvent()
     return processEventList[nextEventIndex][0];
 }
 
+int Process::getNextNextEvent()
+{
+    if (complete)
+    {
+        return -1;
+    }
+    return processEventList[nextEventIndex][0];
+}
+
 int Process::getNextTime()
 {
     if (complete)
@@ -158,6 +186,11 @@ void Process::calculateStats()
     stats.turnaroundTime = stats.finishTime - stats.arrivalTime;
     stats.normalized_turnaroundTime = (double)stats.turnaroundTime / (double)stats.serviceTime;
     stats.avg_responseTime = (double)stats.responseTimeTotal / (double)stats.responseCount;
+}
+
+void Process::initS0()
+{
+    lastPredicted = getNextTime();
 }
 
 void Process::print(std::string filename)
