@@ -1,6 +1,5 @@
 #pragma once
 
-#include <algorithm>
 #include "event.h"
 
 class SRT
@@ -14,11 +13,6 @@ private:
     unsigned int processExitCount = 0;
     bool service = false;
     float alpha = 0;
-
-    int processRunning = -1;
-    std::vector<int> previousProcess;
-    bool interrupted = false;
-    bool skip = false;
 
     void print();
     int calcNext();
@@ -54,29 +48,16 @@ SRT::SRT(std::string filename, bool given, float a)
             // Statistics
             processList.at(processId).stats.responseCount++;
             processList.at(processId).stats.responseLast = handler.getTime();
-
-            handler.cpuIdle = true;
-            interrupted = true;
         }
         else if (event.action == Event::BLOCK)
         {
-            std::vector<int>::iterator it;
-            it = std::find(previousProcess.begin(), previousProcess.end(), processId);
-            if (it == previousProcess.end())
-            {
-                EventInfo unblock;
-                unblock.action = Event::UNBLOCK;
-                unblock.process = processList.at(processId);
-                unblock.timestamp = (handler.getTime() + runtime);
-                handler.addEvent(unblock);
+            EventInfo unblock;
+            unblock.action = Event::UNBLOCK;
+            unblock.process = processList.at(processId);
+            unblock.timestamp = (handler.getTime() + runtime);
+            handler.addEvent(unblock);
 
-                handler.cpuIdle = true;
-                processRunning = -1;
-            }
-            else
-            {
-                previousProcess.erase(it);
-            }
+            handler.cpuIdle = true;
         }
         else if (event.action == Event::UNBLOCK)
         {
@@ -90,34 +71,10 @@ SRT::SRT(std::string filename, bool given, float a)
         {
             processExitCount++;
             handler.cpuIdle = true;
-            processRunning = -1;
             processList.at(processId).stats.finishTime = handler.getTime();
 
             // Process statistics
             processList.at(processId).calculateStats();
-        }
-
-        if (interrupted && processRunning != -1)
-        {
-            processList.at(processRunning).nextEventIndex--;
-            int duration = processList.at(processRunning).getNextTime();
-            if (duration == (handler.getTime() - processList.at(processRunning).clockStart))
-            {
-                processList.at(processRunning).nextEventIndex++;
-            }
-            else if (duration > (handler.getTime() - processList.at(processRunning).clockStart))
-            {
-                processList.at(processRunning).setNextTime(duration - (handler.getTime() - processList.at(processRunning).clockStart));
-                previousProcess.push_back(processRunning);
-                readyQueue.push_back(processId);
-
-                handler.cpuIdle = true;
-                processRunning = -1;
-                interrupted = false;
-
-                processList.at(processRunning).stats.responseCount++;
-                processList.at(processRunning).stats.responseLast = handler.getTime();
-            }
         }
 
         if (handler.is_Idle() && !readyQueue.empty())
@@ -131,7 +88,6 @@ SRT::SRT(std::string filename, bool given, float a)
             }
 
             handler.cpuIdle = false;
-            processRunning = processId;
             processList.at(processId).clockStart = handler.getTime();
             processList.at(processId).stats.responseTimeTotal += (handler.getTime() - processList.at(processId).stats.responseLast);
             processList.at(processId).stats.responseLast = -1;
@@ -139,6 +95,7 @@ SRT::SRT(std::string filename, bool given, float a)
             runtime = processList.at(processId).getNextTime();
 
             processList.at(processId).stats.serviceTime += runtime;
+            processList.at(processId).remainingTotal -= runtime;
 
             processList.at(processId).updateEventIndex();
             int event = processList.at(processId).getNextEvent();
@@ -203,14 +160,14 @@ int SRT::calcNext()
     if (service)
     {
         int indexRemove = 0;
-        int min = 100000;
+        int max = -1;
         for (unsigned int i = 0; i < readyQueue.size(); i++)
         {
             int id = readyQueue.at(i);
-            int temp = processList.at(id).remainingTotal;
-            if (temp < min)
+            int temp = (((float)handler.getTime() - (float)processList.at(id).stats.responseLast) + processList.at(id).remainingTotal) / (float)processList.at(id).remainingTotal;
+            if (temp > max)
             {
-                min = temp;
+                max = temp;
                 indexRemove = i;
             }
         }
