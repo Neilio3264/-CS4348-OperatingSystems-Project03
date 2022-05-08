@@ -1,11 +1,11 @@
 Process 0:
                 Arrival Time: 0
                   Start Time: 0
-                 Finish Time: 196
+                 Finish Time: 206
                 Service Time: 22
-             Turnaround Time: 196
-  Normalized Turnaround Time: 8.91
-       Average Response Time: 55.33
+             Turnaround Time: 206
+  Normalized Turnaround Time: 9.36
+       Average Response Time: 58.67
 ---------------------------------------------
 Process 1:
                 Arrival Time: 3
@@ -19,30 +19,30 @@ Process 1:
 Process 2:
                 Arrival Time: 7
                   Start Time: 110
-                 Finish Time: 230
+                 Finish Time: 227
                 Service Time: 11
-             Turnaround Time: 223
-  Normalized Turnaround Time: 20.27
-       Average Response Time: 40.40
+             Turnaround Time: 220
+  Normalized Turnaround Time: 20.00
+       Average Response Time: 39.80
 ---------------------------------------------
 Process 3:
                 Arrival Time: 11
                   Start Time: 163
-                 Finish Time: 216
+                 Finish Time: 226
                 Service Time: 30
-             Turnaround Time: 205
-  Normalized Turnaround Time: 6.83
-       Average Response Time: 77.00
+             Turnaround Time: 215
+  Normalized Turnaround Time: 7.17
+       Average Response Time: 82.00
 ---------------------------------------------
 Process 4:
                 Arrival Time: 90
                   Start Time: 187
-                 Finish Time: 232
+                 Finish Time: 228
                 Service Time: 11
-             Turnaround Time: 142
-  Normalized Turnaround Time: 12.91
-       Average Response Time: 24.20
+             Turnaround Time: 138
+  Normalized Turnaround Time: 12.55
+       Average Response Time: 23.40
 ---------------------------------------------
-           Mean Turnaround Time: 188.00
-Mean Normalized Turnaround Time: 10.01
-     Mean Average Response Time: 40.39
+           Mean Turnaround Time: 190.60
+Mean Normalized Turnaround Time: 10.04
+     Mean Average Response Time: 41.77
